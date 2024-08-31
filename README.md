@@ -57,7 +57,7 @@ Edit ending of **pacman.conf** to resemble:
     # tips on creating your own repositories.
     [mesa-minimal-git]
     SigLevel = Optional TrustAll
-    Server = file:///home/$USER/Documents/MAKE/repo-mesa-minimal-git/
+    Server = file:///home/YOUR-USER-NAME/Documents/MAKE/repo-mesa-minimal-git/
 Needs to be done only once.
 ## Why a local repository?
 More packages could be compiled than needed to get installed. The local repo lets pacman install only what is needed.
