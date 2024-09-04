@@ -15,14 +15,17 @@ Before running this script you will need (**only once!**) to set the **chroot** 
 # Setting up chroot
 
 ### Setting up a chroot
-The chroot is like a mini Arch install. We will be building the packages in it. It helps us with dependency issues and insures proper compiles.
+The chroot is like a mini Arch install. We will be building the packages in it.
+> Building in a clean chroot prevents missing dependencies in packages,
+> whether due to unwanted linking or packages missing in the depends
+> array in the PKGBUILD.
 
 > The [devtools](https://archlinux.org/packages/?name=devtools) package
 > provides tools for creating and building within clean chroots. Install
 > it if not done already.
 
- To make a clean chroot, create a directory in which the chroot will
- reside. For example, `$HOME/chroot`.
+> To make a clean chroot, create a directory in which the chroot will
+> reside. For example, `$HOME/chroot`.
 
 Now here the Arch wiki has us creating the folder of the chroot in our home folder. We will call the folder **`.chroot`** instead of **`chroot`** to have it hidden.
 
@@ -45,7 +48,7 @@ Search for **!debug**
 
 A bit below it you will see `OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge debug lto)` , put an **!** before **debug** :
 
-    OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge !debug lto)
+`OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge !debug lto)`
 
 
 ## Creating local repository
