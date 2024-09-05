@@ -101,7 +101,14 @@ Make sure it's executable (from your file manager or **chmod +x filename.sh** ) 
 
 ## Disclaimer
 
-I don't maintain the build scripts at AUR. If it fails here, you don't go reporting at the AUR pages that my script failed. The idea of this script is for me to automate the process as much as possible for myself. No responsibility will be taken. You should have a very good understanding why we are compiling these components and be able to troubleshoot by yourself. This is not an AUR helper where you just mash Enter and hope for the best.
+I don't maintain the build scripts at AUR. The idea of this script is for me to automate the process as much as possible for myself. 
+No responsibility will be taken! 
+You should have a very good understanding why we are compiling these components and be able to troubleshoot by yourself. 
+This is not an AUR helper where you just mash Enter and hope for the best!
 
+If you experiance a built failure of some components, say `llvm-minimal-git` or be it `lib32-mesa-minimal-git`, you could copy the error code and report it to said AUR page.
+Again, you should be able to troubleshoot the script youself.
+You should be able to see in `PKGBUILDs`the required build packages, steps in the compilation and be able to do minor fixes on your own. 
+After having a look at the `PKGBUILDs` you should have a nice understanding of wtich gets compiled, in what order, with what dependancies, what should get linked to it to compile.
 Only Arch is supported, Arch derivatives are **NOT**!
 
