@@ -3,18 +3,21 @@
 
 Building [mesa-git](https://aur.archlinux.org/packages/mesa-git)/[mesa-minimal-git](https://aur.archlinux.org/packages/mesa-minimal-git) on Arch is suggested to be done manually rather than using an AUR helper. You should start by reading the pinned comments at the AUR page for mesa-git. You will get the idea why it is being done this way.
 
-This guide explains how the so called [clean chroot](https://wiki.archlinux.org/title/DeveloperWiki:Building_in_a_clean_chroot) has to be configured, how a [local repository for pacman](https://wiki.archlinux.org/title/Pacman/Tips_and_tricks#Custom_local_repository) should be made, provides a simple build script and maybe even some compiled packages.
+Here I will provide you with an automated script that fallows the AUR steps for compiling mesa-minimal-git,  but before you run it you will have to set a few things explainet in the steps bellow.
 
-Both AURs mesa-git and mesa-minimal-git are provided by the same maintainer. Idea behind mesa-minimal-git is to compile only the needed drivers.
+A [clean chroot](https://wiki.archlinux.org/title/DeveloperWiki:Building_in_a_clean_chroot) has to be configured, and a [local repository for pacman](https://wiki.archlinux.org/title/Pacman/Tips_and_tricks#Custom_local_repository) should be made.
 
-Will be providing two scripts. One compiles mesa-minimal-git as is. The other will compile only the bare-minimum for AMD-GPUs.
+I will be providing two scripts. One compiles mesa-minimal-git as is. The other will compile only the bare-minimum for AMD-GPUs.
 
 Before running this script you will need (**only once!**) to set the **chroot** and the **local repo**. The first two steps here will explain doing just that:
+
+# Why mesa-minimal-git
+
+Will tl;dr the AUR page for mesa-minimal-git, I use it for the sake of performance. The majority of mesa's components are of no use for me. Even better, the less components we compile, the lesser change for a build failure.
 
 
 # Setting up chroot
 
-### Setting up a chroot
 The chroot is like a mini Arch install. We will be building the packages in it.
 > Building in a clean chroot prevents missing dependencies in packages,
 > whether due to unwanted linking or packages missing in the depends
@@ -70,13 +73,7 @@ More packages could be compiled than needed to get installed. The local repo let
  - It's a fairly simple script. It will make a directory under your home
    folder - **`mesa-minimal-git`**.
 
-  - Since compiling all of this can take its time, the first lines take
-   care of sudo not timing out.
-   *Yeah, I know it is not done in the most elegant way.*
-
-  - Has a simple line to stop the script if a build fails.
-
-   - The script will pull from AUR what is needed for mesa-minimal-git to
+ - The script will pull from AUR what is needed for mesa-minimal-git to
    compile. It will start building in the correct build order.
    - Tests after compilation of llvm-minimal-git and lib32-llvm-minimal-git will get skipped to save time.
 
@@ -94,7 +91,7 @@ More packages could be compiled than needed to get installed. The local repo let
 
 ## Running it
 
-Make sure it's executable and run it in a terminal. Should be automated. If it fails, well probably some new commit got made. I just share my script, if I fix it for myself, it will get fixed for you too.
+Make sure it's executable (from your file manager or **chmod +x filename.sh** ) and run it in a terminal. Should be automated. If it fails, well probably some new commit got made. I just share my script, if I fix it for myself, it will get fixed for you too.
 
 ## Disclaimer
 
