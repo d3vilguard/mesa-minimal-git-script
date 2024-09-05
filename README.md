@@ -91,21 +91,21 @@ More packages could be compiled than needed to get installed. The local repo let
 
       That is being done for archival purposes. The script doesn't delete old folders, you do when you want to.
    
-    - Will also copy all the packages to
+    - Will also copy all the packages to `/home/$USER/Documents/MAKE/repo-mesa-minimal-git/`
+      which you guessed it, is where the packages of our **local repo** are located.
    
-   `/home/$USER/Documents/MAKE/repo-mesa-minimal-git/` which you guessed
-   it, is where the packages of our **local repo** are located.
-   
-    - In `repo-mesa-minimal-git/` the latest build packages will get stored.
+    - In `repo-mesa-minimal-git/` the latest build packages will get stored and a few database files for the repo.
    
    
- - Script will update the local repo by calling 
+ - Script will update the local repo by calling:
    
-   **repo-add -n /home/$USER/Documents/MAKE/repo-mesa-minimal-git/mesa-minimal-git.db.tar.gz /home/$USER/Documents/MAKE/repo-mesa-minimal-git/*.pkg.tar.zst**
+   `repo-add -n /home/$USER/Documents/MAKE/repo-mesa-minimal-git/mesa-minimal-git.db.tar.gz /home/$USER/Documents/MAKE/repo-mesa-minimal-git/*.pkg.tar.zst`
 
- - If you need to rollback, delete **only** the packages in `repo-mesa-minimal-git`, run the above `repo-add` line and do a **pacman -Syyu**
+   That updates the database files of the repo.
 
- - After that it will call a **pacman -Syu**
+ - If you need to rollback, delete **only** the packages (`.pkg.tar.zst`) in the folder `repo-mesa-minimal-git`, run the above `repo-add` line and do a **pacman -Syyu**
+
+ - After that it will call a `pacman -Syu`
 
   - **!** If you are running the script for the first time the **pacman -Syu** won't install mesa-minimal-git. You will have to  `pacman -S mesa-minimal-git lib32-mesa-minimal-git` **!**
 
