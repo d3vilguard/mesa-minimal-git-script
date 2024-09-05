@@ -1,24 +1,18 @@
 #!/bin/bash
-# Function to handle Ctrl+C
+# Function to handle cleanup when script exits or is interrupted
 cleanup() {
+    echo "Cleaning up..."
+    kill $SUDO_REFRESH_PID 2>/dev/null  # Terminate sudo refresh background process
     echo "Exiting script..."
     exit 1
 }
 # Trap Ctrl+C and call cleanup function
 trap cleanup INT
-# Function to run commands with sudo without password prompt
-run_with_sudo() {
-    local command="$1"
-    shift
-    sudo -S <<< "$SUDO_PASSWORD" "$command" "$@"
-}
-
-# Ask for the user's password if not already set
-if [ -z "$SUDO_PASSWORD" ]; then
-    read -sp "Enter your password: " SUDO_PASSWORD
-    echo  # Move to a new line after password input
-fi
-# Make directory where we will do our work
+# Ask for sudo password at the beginning of the script
+sudo -v
+# Start a background process to refresh sudo and prevent being asked for password twice
+( while true; do sudo -v; sleep 270; done ) &  # Refresh every 4.5 minutes
+SUDO_REFRESH_PID=$!  # Save the PID of the background process
 mkdir /home/$USER/mesa-minimal-git
 cd /home/$USER/mesa-minimal-git
 # Create "Packages" directory where at the end all compiled packages will be placed
@@ -37,10 +31,10 @@ arch-nspawn "$CHROOT/root" pacman -Syu --noconfirm
 mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/spirv-llvm-translator-minimal-git/"
 # Make llvm-minimal-git
 cd /home/$USER/mesa-minimal-git/llvm-minimal-git
-run_with_sudo makechrootpkg -c -r "$CHROOT" -- --nocheck
-# Check the exit status of makechrootpkg command 1
+sudo makechrootpkg -c -r "$CHROOT" -- --nocheck
+# Check the exit status of sudo makechrootpkg command 1
 if [ $? -ne 0 ]; then
-    echo "makechrootpkg command 1 failed. Exiting script."
+    echo "sudo makechrootpkg command 1 failed. Exiting script."
     exit 1
 fi
 # Move the generated packages to lib32-llvm-minimal-git
@@ -48,40 +42,40 @@ mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/lib32-llvm-minimal-git/"
 # Build lib32-llvm-minimal in its folder
 cd /home/$USER/mesa-minimal-git/lib32-llvm-minimal-git
 # Edit PKGBUILD to disable the check function
-run_with_sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -- --nocheck
-# Check the exit status of makechrootpkg command 1
+sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -- --nocheck
+# Check the exit status of sudo makechrootpkg command 1
 if [ $? -ne 0 ]; then
-    echo "makechrootpkg command 1 failed. Exiting script."
+    echo "sudo makechrootpkg command 1 failed. Exiting script."
     exit 1
 fi
 # Move compiled to spirv-llvm-translator-minimal-git
 mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/spirv-llvm-translator-minimal-git/"
 # Make spirv-llvm-translator-minimal-git
 cd /home/$USER/mesa-minimal-git/spirv-llvm-translator-minimal-git
-run_with_sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst
-# Check the exit status of makechrootpkg command 1
+sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst
+# Check the exit status of sudo makechrootpkg command 1
 if [ $? -ne 0 ]; then
-    echo "makechrootpkg command 1 failed. Exiting script."
+    echo "sudo makechrootpkg command 1 failed. Exiting script."
     exit 1
 fi
 # Move compild to lib32-spirv-llvm-translator-minimal-git
 mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/lib32-spirv-llvm-translator-minimal-git"
 # Make lib32-spirv-llvm-translator-minimal-git
 cd /home/$USER/mesa-minimal-git/lib32-spirv-llvm-translator-minimal-git
-run_with_sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I lib32-llvm-libs-minimal-git-*.pkg.tar.zst -I lib32-llvm-minimal-git-*.pkg.tar.zst -I lib32-clang-libs-minimal-git-*.pkg.tar.zst -I lib32-clang-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst
-# Check the exit status of makechrootpkg command 1
+sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I lib32-llvm-libs-minimal-git-*.pkg.tar.zst -I lib32-llvm-minimal-git-*.pkg.tar.zst -I lib32-clang-libs-minimal-git-*.pkg.tar.zst -I lib32-clang-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst
+# Check the exit status of sudo makechrootpkg command 1
 if [ $? -ne 0 ]; then
-    echo "makechrootpkg command 1 failed. Exiting script."
+    echo "sudo makechrootpkg command 1 failed. Exiting script."
     exit 1
 fi
 # Move compiled to libclc-minimal-git
 mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/libclc-minimal-git/"
 # Make libclc-minimal-git
 cd /home/$USER/mesa-minimal-git/libclc-minimal-git
-run_with_sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst
-# Check the exit status of makechrootpkg command 1
+sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst
+# Check the exit status of sudo makechrootpkg command 1
 if [ $? -ne 0 ]; then
-    echo "makechrootpkg command 1 failed. Exiting script."
+    echo "sudo makechrootpkg command 1 failed. Exiting script."
     exit 1
 fi
 # Move compiled to mesa-minimal-git
@@ -89,12 +83,13 @@ mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/mesa-minimal-git/"
 # Make mesa-minimal-git
 cd /home/$USER/mesa-minimal-git/mesa-minimal-git
 # Edit pkgbuild to compile only needed AMD components
-sed -i 's/-D gallium-drivers=[^ ]* \\$/-D gallium-drivers=radeonsi \\/' PKGBUILD
+# I usually don't compile zink too, but leaving it here
+sed -i 's/-D gallium-drivers=[^ ]* \\$/-D gallium-drivers=radeonsi,zink \\/' PKGBUILD
 sed -i 's/-D vulkan-drivers=[^ ]* \\$/-D vulkan-drivers=amd,swrast \\/' PKGBUILD
-run_with_sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst -I libclc-minimal-git-*.pkg.tar.zst
-# Check the exit status of makechrootpkg command 1
+sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst -I libclc-minimal-git-*.pkg.tar.zst
+# Check the exit status of sudo makechrootpkg command 1
 if [ $? -ne 0 ]; then
-    echo "makechrootpkg command 1 failed. Exiting script."
+    echo "sudo makechrootpkg command 1 failed. Exiting script."
     exit 1
 fi
 # Move compiled to lib32-mesa-minimal-git
@@ -102,12 +97,12 @@ mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/lib32-mesa-minimal-git/"
 # Make lib32-mesa-minimal-git
 cd /home/$USER/mesa-minimal-git/lib32-mesa-minimal-git
 # Edit pkgbuild to compile only needed AMD components
-sed -i 's/-D gallium-drivers=[^ ]* \\$/-D gallium-drivers=radeonsi \\/' PKGBUILD
+sed -i 's/-D gallium-drivers=[^ ]* \\$/-D gallium-drivers=radeonsi,zink \\/' PKGBUILD
 sed -i 's/-D vulkan-drivers=[^ ]* \\$/-D vulkan-drivers=amd,swrast \\/' PKGBUILD
-run_with_sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I lib32-llvm-libs-minimal-git-*.pkg.tar.zst -I lib32-llvm-minimal-git-*.pkg.tar.zst -I lib32-clang-libs-minimal-git-*.pkg.tar.zst -I lib32-clang-minimal-git-*.pkg.tar.zst -I lib32-clang-opencl-headers-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst -I lib32-spirv-llvm-translator-minimal-git-*.pkg.tar.zst -I libclc-minimal-git-*.pkg.tar.zst -I mesa-minimal-git-*.pkg.tar.zst
-# Check the exit status of makechrootpkg command 1
+sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I lib32-llvm-libs-minimal-git-*.pkg.tar.zst -I lib32-llvm-minimal-git-*.pkg.tar.zst -I lib32-clang-libs-minimal-git-*.pkg.tar.zst -I lib32-clang-minimal-git-*.pkg.tar.zst -I lib32-clang-opencl-headers-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst -I lib32-spirv-llvm-translator-minimal-git-*.pkg.tar.zst -I libclc-minimal-git-*.pkg.tar.zst -I mesa-minimal-git-*.pkg.tar.zst
+# Check the exit status of sudo makechrootpkg command 1
 if [ $? -ne 0 ]; then
-    echo "makechrootpkg command 1 failed. Exiting script."
+    echo "sudo makechrootpkg command 1 failed. Exiting script."
     exit 1
 fi
 # Move compiled to Built-Packages
@@ -135,14 +130,18 @@ if [[ "$delete_folder" =~ ^[Yy]$ ]]; then
     rm -rf /home/$USER/mesa-minimal-git
     echo "mesa-minimal-git folder deleted."
 fi
-# Ask if the user wants to install
+# Ask if the user wants to install the packages now
 read -p "Do you want to install the packages now? (Y/n): " install_packages
 if [[ "$install_packages" =~ ^[Yy]$ ]]; then
-    sudo pacman -Syu
+    sudo pacman -Syu  # Use sudo for the installation command
 else
     echo "Installation skipped."
-    exit 0
 fi
+# Cleanup: Kill the sudo refresher process
+kill $SUDO_REFRESH_PID 2>/dev/null  # Ensure the refresher is terminated
+# Final message
+echo "Script finished. Exiting."
+exit 0
 
 
 
