@@ -1,5 +1,5 @@
 
-# mesa-minimal-git builder script
+# mesa-minimal-git builder script / helper
 
 Building [mesa-git](https://aur.archlinux.org/packages/mesa-git)/[mesa-minimal-git](https://aur.archlinux.org/packages/mesa-minimal-git) on Arch is suggested to be done manually rather than using an AUR helper. You should start by reading the pinned comments at the AUR page for mesa-git. You will get the idea why it is being done this way.
 
