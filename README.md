@@ -60,8 +60,14 @@ P.S. to searh in `nano` - `ctrl` + `W`
 
 
 ## Creating local repository
-This is very important so read slowly. Create a folder:
- `sudo mkdir /srv/repo`
+This is very important so read slowly. 
+
+Give yourself permissions to `/srv`:
+`sudo chown $USER:$USER /srv`
+
+Create a folder:
+ `mkdir /srv/repo`
+
  
 Now we will need to give `alpm` permission to that folder in order for pacman to see it:
  `sudo chown :alpm -R /srv/repo`
@@ -142,3 +148,20 @@ After having a look at the `PKGBUILDs` you should have a nice understanding of w
 
 Only Arch is supported, Arch derivatives are **NOT**!
 
+## My builds
+
+Alternatively you can use my builts (I don't promise to update them friquently here). To do that fallow the steps above doing:
+
+ - creating the `/srv/repo` folder and give `youserlf` and `alpm` permissions to it
+   
+ - adding the repo to `pacman.conf`
+
+ - make the repo folder `mkdir -p /srv/repo/repo-mesa-minimal-git`
+
+ - download my compiled archive and extract it
+   
+ - open the downloaded folder containing all the packages and run: `mv *.pkg.tar.zst /srv/repo/repo-mesa-minimal-git/`
+
+ - do `repo-add` to update the repo: repo-add -n /srv/repo/repo-mesa-minimal-git/mesa-minimal-git.db.tar.gz /srv/repo/repo-mesa-minimal-git/*.pkg.tar.zst
+
+ - install: `sudo pacman -Syu && sudo pacman -S mesa-minimal-git lib32-mesa-minimal-git`
