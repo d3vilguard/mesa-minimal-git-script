@@ -9,7 +9,7 @@ A [clean chroot](https://wiki.archlinux.org/title/DeveloperWiki:Building_in_a_cl
 Before running this script you will need (**only once!**) to set the **chroot** and the **local repo**. The first two steps here will explain doing just that.
 
 I will be providing two scripts. One compiles mesa-minimal-git as is. The other will compile only the drivers for AMD-GPUs.
-
+P.S. at the moment only one script compiling drivers only for AMD will be provided. 
 
 
 ## Why mesa-minimal-git
@@ -113,10 +113,6 @@ More packages could be compiled than needed to get installed. The local repo let
 
   - **!** If you are running the script for the first time the **pacman -Syu** won't install mesa-minimal-git. You will have to  `pacman -S mesa-minimal-git lib32-mesa-minimal-git` **!**
     
-## IF RUNNING FOR THE FIRST TIME!!!
-**This script is intended to build and update but not do the initial installation. You will need to manually run:**
-
-  **`sudo pacman -S mesa-minimal-git lib32-mesa-minimal-git`**
 # The AMD script
 From all the compomemts we will be compiling `gallium-drivers=radeonsi,zink` and `vulkan-drivers=amd,swrast`. Now, `radeonsi` and `amd` are absolutely requiered! I keep `swrast` as a fallback. You are better off leaving `zink` in the mix too, although I skip compiling it at this time.
 
@@ -124,7 +120,12 @@ I really see no point in compiling Intel GPU drivers as I have only an AMD GPU i
 On the other hand for Intel you can only compile `iris`, `intel` and probably `swrast` only. If you don't plan to virtualize the installation, `virgl` is not needed.
 ## Running it
 
-Make sure it's executable (from your file manager or **chmod +x filename.sh** ) and run it in a terminal. Should be automated. If it fails, well probably some new commit got made. I just share my script, if I fix it for myself, it will get fixed for you too.
+Make sure it's executable (from your file manager or **chmod +x filename.sh** ) and run it in a terminal `./AMD-mesa-minimal-git.sh`. Should be automated. If it fails, well probably some new commit got made. I just share my script, if I fix it for myself, it will get fixed for you too.
+
+## IF RUNNING FOR THE FIRST TIME!!!
+**This script is intended to build and update but not do the initial installation. You will need to manually run:**
+
+  **`sudo pacman -S mesa-minimal-git lib32-mesa-minimal-git`**
 
 ## Disclaimer
 
