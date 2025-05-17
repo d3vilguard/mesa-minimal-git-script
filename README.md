@@ -42,7 +42,7 @@ Now here the Arch wiki has us creating the folder of the chroot in our home fold
  Now create the chroot
 `$ mkarchroot $CHROOT/root base-devel`
 
-Define the `CHROOT` variable in `$HOME/.bashrc`. Put `export CHROOT=$HOME/.chroot` in it and reboot / log-out.
+Define the `CHROOT` variable in `$HOME/.bashrc` (or `.zshrc` if you are cool ;) ). Put `export CHROOT=$HOME/.chroot` in it and reboot / log-out.
 
 Adjust the mirrorlist in `$CHROOT/root/etc/pacman.d/mirrorlist` and enable the [multilib] repo.
  `$ nano $CHROOT/root/etc/pacman.conf`
@@ -60,17 +60,21 @@ P.S. to searh in `nano` - `ctrl` + `W`
 
 
 ## Creating local repository
-
-All you need to do is edit **/etc/pacman.conf**. Our repo will be named **repo-mesa-minimal-git**.
+This is very important so read slowly. Create a folder:
+ `sudo mkdir /srv/repo`
+ 
+Now we will need to give `alpm` permission to that folder in order for pacman to see it:
+ `sudo chown :alpm -R /srv/repo`
+ 
+You need to do is edit **/etc/pacman.conf**. Our repo will be named **repo-mesa-minimal-git**.
 Edit ending of **pacman.conf** to resemble:
 
     # An example of a custom package repository. See the pacman manpage for
     # tips on creating your own repositories.
     [mesa-minimal-git]
     SigLevel = Optional TrustAll
-    Server = file:///home/YOUR-USER-NAME/Documents/MAKE/repo-mesa-minimal-git/
-
-Change `YOUR-USER-NAME` to your username.
+    Server = file:///srv/repo/repo-mesa-minimal-git/
+    
 Needs to be done only once.
 ## Why a local repository?
 More packages could be compiled than needed to get installed. The local repo lets pacman install only what is needed.
@@ -91,7 +95,7 @@ More packages could be compiled than needed to get installed. The local repo let
 
       That is being done for archival purposes. The script doesn't delete old folders, you do when you want to.
    
-    - Will also copy all the packages to `/home/$USER/Documents/MAKE/repo-mesa-minimal-git/`
+    - Will also copy all the packages to `/srv/repo/repo-mesa-minimal-git/`
       which you guessed it, is where the packages of our **local repo** are located.
    
     - In `repo-mesa-minimal-git/` the latest build packages will get stored and a few database files for the repo.
@@ -99,7 +103,7 @@ More packages could be compiled than needed to get installed. The local repo let
    
  - Script will update the local repo by calling:
    
-   `repo-add -n /home/$USER/Documents/MAKE/repo-mesa-minimal-git/mesa-minimal-git.db.tar.gz /home/$USER/Documents/MAKE/repo-mesa-minimal-git/*.pkg.tar.zst`
+   `repo-add -n /srv/repo/repo-mesa-minimal-git/mesa-minimal-git.db.tar.gz /srv/repo/repo-mesa-minimal-git/*.pkg.tar.zst`
 
    That updates the database files of the repo.
 
@@ -108,7 +112,11 @@ More packages could be compiled than needed to get installed. The local repo let
  - After that it will call a `pacman -Syu`
 
   - **!** If you are running the script for the first time the **pacman -Syu** won't install mesa-minimal-git. You will have to  `pacman -S mesa-minimal-git lib32-mesa-minimal-git` **!**
+    
+## IF RUNNING FOR THE FIRST TIME!!!
+**This script is intended to build and update but not do the initial installation. You will need to manually run:**
 
+  **`sudo pacman -S mesa-minimal-git lib32-mesa-minimal-git`**
 # The AMD script
 From all the compomemts we will be compiling `gallium-drivers=radeonsi,zink` and `vulkan-drivers=amd,swrast`. Now, `radeonsi` and `amd` are absolutely requiered! I keep `swrast` as a fallback. You are better off leaving `zink` in the mix too, although I skip compiling it at this time.
 
@@ -124,8 +132,6 @@ I don't maintain the build scripts at AUR. The idea of this script is for me to 
 No responsibility will be taken! 
 You should have a very good understanding why we are compiling these components and be able to troubleshoot by yourself. 
 This is not an AUR helper where you just mash Enter and hope for the best!
-
-If you experiance a built failure of some components, say `llvm-minimal-git` or be it `lib32-mesa-minimal-git`, you could copy the error code and report it to said AUR page.
 
 Again, you should be able to troubleshoot the script youself.
 
