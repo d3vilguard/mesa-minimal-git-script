@@ -25,10 +25,9 @@ git clone https://aur.archlinux.org/libclc-minimal-git.git
 git clone https://aur.archlinux.org/mesa-minimal-git.git
 git clone https://aur.archlinux.org/lib32-mesa-minimal-git.git
 git clone https://aur.archlinux.org/lib32-spirv-llvm-translator-minimal-git.git
+git clone https://aur.archlinux.org/spirv-headers-git.git
 cd /home/$USER/mesa-minimal-git
 arch-nspawn "$CHROOT/root" pacman -Syu --noconfirm
-# Move compiled to spirv-llvm-translator-minimal-git
-mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/spirv-llvm-translator-minimal-git/"
 # Make llvm-minimal-git
 cd /home/$USER/mesa-minimal-git/llvm-minimal-git
 sudo makechrootpkg -c -r "$CHROOT" -- --nocheck
@@ -48,11 +47,21 @@ if [ $? -ne 0 ]; then
     echo "sudo makechrootpkg command 1 failed. Exiting script."
     exit 1
 fi
+# Move compiled to spirv-headers-git
+mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/spirv-headers-git/"
+# Make spirv-llvm-translator-minimal-git
+cd /home/$USER/mesa-minimal-git/spirv-headers-git
+sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst
+# Check the exit status of sudo makechrootpkg command 1
+if [ $? -ne 0 ]; then
+    echo "sudo makechrootpkg command 1 failed. Exiting script."
+    exit 1
+fi
 # Move compiled to spirv-llvm-translator-minimal-git
 mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/spirv-llvm-translator-minimal-git/"
 # Make spirv-llvm-translator-minimal-git
 cd /home/$USER/mesa-minimal-git/spirv-llvm-translator-minimal-git
-sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst
+sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I spirv-headers-git-*.pkg.tar.zst
 # Check the exit status of sudo makechrootpkg command 1
 if [ $? -ne 0 ]; then
     echo "sudo makechrootpkg command 1 failed. Exiting script."
@@ -62,7 +71,7 @@ fi
 mv *.pkg.tar.zst "/home/$USER/mesa-minimal-git/lib32-spirv-llvm-translator-minimal-git"
 # Make lib32-spirv-llvm-translator-minimal-git
 cd /home/$USER/mesa-minimal-git/lib32-spirv-llvm-translator-minimal-git
-sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I lib32-llvm-libs-minimal-git-*.pkg.tar.zst -I lib32-llvm-minimal-git-*.pkg.tar.zst -I lib32-clang-libs-minimal-git-*.pkg.tar.zst -I lib32-clang-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst
+sudo makechrootpkg -c -r "$CHROOT" -I llvm-minimal-git-*.pkg.tar.zst -I llvm-libs-minimal-git*.pkg.tar.zst -I clang-libs-minimal-git-*.pkg.tar.zst -I clang-minimal-git-*.pkg.tar.zst -I clang-opencl-headers-minimal-git-*.pkg.tar.zst -I lib32-llvm-libs-minimal-git-*.pkg.tar.zst -I lib32-llvm-minimal-git-*.pkg.tar.zst -I lib32-clang-libs-minimal-git-*.pkg.tar.zst -I lib32-clang-minimal-git-*.pkg.tar.zst -I spirv-llvm-translator-minimal-git-*.pkg.tar.zst -I spirv-headers-git-*.pkg.tar.zst
 # Check the exit status of sudo makechrootpkg command 1
 if [ $? -ne 0 ]; then
     echo "sudo makechrootpkg command 1 failed. Exiting script."
@@ -110,19 +119,19 @@ mv *.pkg.tar.zst /home/$USER/mesa-minimal-git/Built-Packages
 # Install
 cd /home/$USER/mesa-minimal-git/Built-Packages
 # Step 1: Remove the existing folder
-rm -rf /home/$USER/Documents/MAKE/repo-mesa-minimal-git
+rm -rf /srv/repo/repo-mesa-minimal-git
 # Step 2: Recreate the folder
-mkdir -p /home/$USER/Documents/MAKE/repo-mesa-minimal-git
+mkdir -p /srv/repo/repo-mesa-minimal-git
 # Step 3: Move *.pkg.tar.zst files to the repo folder
-mv /home/$USER/mesa-minimal-git/Built-Packages/*.pkg.tar.zst /home/$USER/Documents/MAKE/repo-mesa-minimal-git/
+mv /home/$USER/mesa-minimal-git/Built-Packages/*.pkg.tar.zst /srv/repo/repo-mesa-minimal-git/
 # Make repo
-repo-add -n /home/$USER/Documents/MAKE/repo-mesa-minimal-git/mesa-minimal-git.db.tar.gz /home/$USER/Documents/MAKE/repo-mesa-minimal-git/*.pkg.tar.zst
+repo-add -n /srv/repo/repo-mesa-minimal-git/mesa-minimal-git.db.tar.gz /srv/repo/repo-mesa-minimal-git/*.pkg.tar.zst
 # Step 4: Create a folder with the current date
 current_date=$(date +%Y-%m-%d)
 target_folder="/home/$USER/Documents/MAKE/mesa-minimal-git-$current_date"
 mkdir -p "$target_folder"
 # Step 5: Copy *.pkg.tar.zst files to the created folder
-cp /home/$USER/Documents/MAKE/repo-mesa-minimal-git/*.pkg.tar.zst "$target_folder"
+cp /srv/repo/repo-mesa-minimal-git/*.pkg.tar.zst "$target_folder"
 echo "Packages copied to: $target_folder"
 # Ask if the user wants to delete the mesa-minimal-git folder
 read -p "Do you want to delete the mesa-minimal-git folder? (Y/n): " delete_folder
