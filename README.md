@@ -8,9 +8,8 @@ Here I will provide you with an automated script that fallows the AUR steps for 
 A [clean chroot](https://wiki.archlinux.org/title/DeveloperWiki:Building_in_a_clean_chroot) has to be configured, and a [local repository for pacman](https://wiki.archlinux.org/title/Pacman/Tips_and_tricks#Custom_local_repository) should be made. 
 Before running this script you will need (**only once!**) to set the **chroot** and the **local repo**. The first two steps here will explain doing just that.
 
-I will be providing two scripts. One compiles mesa-minimal-git as is. The other will compile only the drivers for AMD-GPUs.
-P.S. at the moment only one script compiling drivers only for AMD will be provided. 
-
+I will be providing ~~two~~ scripts. ~~One compiles mesa-minimal-git as is~~. The other will compile only the drivers for AMD-GPUs.
+*P.S. at the moment only one script compiling drivers only for AMD will be provided. *
 
 ## Why mesa-minimal-git
 
@@ -148,7 +147,7 @@ After having a look at the `PKGBUILDs` you should have a nice understanding of w
 
 Only Arch is supported, Arch derivatives are **NOT**!
 
-## My builds
+## ~~My builds~~ *no compiled uploads are made currently*
 
 Alternatively you can use my builts (I don't promise to update them friquently here). To do that fallow the steps above doing:
 
