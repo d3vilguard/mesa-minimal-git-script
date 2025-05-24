@@ -43,8 +43,10 @@ Now here the Arch wiki has us creating the folder of the chroot in our home fold
 
 Define the `CHROOT` variable in `$HOME/.bashrc` (or `.zshrc` if you are cool ;) ). Put `export CHROOT=$HOME/.chroot` in it and reboot / log-out.
 
-Adjust the mirrorlist in `$CHROOT/root/etc/pacman.d/mirrorlist` and enable the [multilib] repo.
- `$ nano $CHROOT/root/etc/pacman.conf`
+Create the chroot: `mkarchroot $CHROOT/root base-devel`
+
+Adjust the mirrorlist in `$CHROOT/root/etc/pacman.d/mirrorlist` and enable the [multilib] repo:
+ `$ sudo nano $CHROOT/root/etc/pacman.conf`
 
  While we are here, lets edit makepkg to make sure it doesn't build us debug packages (judging by you reading this guide, you won't need them :P)
 `$ sudo nano $CHROOT/root/etc/makepkg.conf`
